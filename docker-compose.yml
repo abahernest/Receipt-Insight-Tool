@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  db:
+    build:
+      context: db_dockerfile
+    restart: always
+    ports:
+      - "54321:5432"
+
+    networks:
+      - webnet
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-ocr_engine}
+      POSTGRES_MULTIPLE_DATABASES: ${DB_MULTIPLE_DATABASES:-ocr_engine_test}
+
+
+networks:
+  webnet:
