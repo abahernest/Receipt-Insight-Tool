@@ -38,6 +38,7 @@ SESSION_COOKIE_SECURE = True if DEBUG is False else False
 
 SECURE_SSL_REDIRECT = True if os.getenv('SECURE_SSL_REDIRECT') == 'True' else False
 
+# APPEND_SLASH = False
 # Application definition
 
 INSTALLED_APPS = [

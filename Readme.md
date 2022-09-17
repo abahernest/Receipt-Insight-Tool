@@ -1,5 +1,4 @@
-
-#
+# Receipt Insight Tool
 
 STEPS TO RUN THE APP LOCALLY
 
@@ -37,3 +36,15 @@ TEST
 
 POSTMAN DOCUMENTATION
 [Postman Doc](https://documenter.getpostman.com/view/11044390/2s7YYu4hju)
+
+
+IMPLEMENTATION & DESIGN
+
+Initially I had 2 ways to implement this.
+
+1. Read the contents of .txt file into a variable, then use regex functions to find the positions of the words and the delimeters.
+
+2. Read the .txt file line-by-line using the readline() function in python. This sequence will produce the row index of the words in the file. Just need to find the column index. While traversing by rows, check that a row isn't a delimeter (i.e the entire row isn't a delimeter). If it is, dont process it to find the start and end column.
+
+
+I decided to go ahead with the second approach because it was easier to implement and the cost of using read() and readline() in python are basically the same thing
