@@ -1,0 +1,14 @@
+Watching for file changes with StatReloader
+Internal Server Error: /api/v1/receipts
+"GET /api/v1/receipts HTTP/1.1" 500 93
+/Users/apple/Documents/papii_doings/ocr-engine/receipt/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/apple/Documents/papii_doings/ocr-engine/src/settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET /api/v1/receipts HTTP/1.1" 200 7519
+/Users/apple/Documents/papii_doings/ocr-engine/receipt/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/apple/Documents/papii_doings/ocr-engine/receipt/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/apple/Documents/papii_doings/ocr-engine/receipt/views.py changed, reloading.
+Watching for file changes with StatReloader

@@ -40,7 +40,7 @@ class ReceiptView (APIView):
 
         except Exception as e:
             print(e)
-            return Jsonesponse(
+            return JsonResponse(
                 {
                     "status": 500,
                     'message': "Internal Server Error",
@@ -165,13 +165,10 @@ class ReceiptView (APIView):
             value = json.loads(delimeter["value"])
             count = delimeter["count"]
             if count != 1 and value*count in word.strip():
-                print("case1")
                 return True
             elif count == 1 and value == word.strip():
-                print("case2")
                 return True
             elif word.strip() in self.POSSIBLE_RETURN_STRINGS:
-                print("case3")
                 return True
 
         return False
