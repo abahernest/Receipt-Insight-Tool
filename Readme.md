@@ -1,8 +1,8 @@
 # Receipt Insight Tool
 
-STEPS TO RUN THE APP LOCALLY
+## STEPS TO RUN THE APP LOCALLY
 
-APPROACH 1
+### APPROACH 1
 
 1. Clone the repo and `cd` into the repo folder
 2. Ensure Python and Pipenv are installed on your machine
@@ -22,23 +22,25 @@ APPROACH 1
 >> python manage.py runserver
 ```
 
-APPROACH 2 (With Docker Compose)
+### APPROACH 2 (With Docker Compose)
+
 1. Clone the appplication and `cd` into the repo folder
+
 2. Run the command below to startup the postgres db as well as the api server
 ```
 >> docker compose up
 ```
 
-TEST
+## TEST
 ```
->> python
+>> python manage.py test
 ```
 
-POSTMAN DOCUMENTATION
+## POSTMAN DOCUMENTATION
 [Postman Doc](https://documenter.getpostman.com/view/11044390/2s7YYu4hju)
 
 
-IMPLEMENTATION & DESIGN
+## IMPLEMENTATION & DESIGN
 
 Initially I had 2 ways to implement this.
 
@@ -48,3 +50,47 @@ Initially I had 2 ways to implement this.
 
 
 I decided to go ahead with the second approach because it was easier to implement and the cost of using read() and readline() in python are basically the same thing
+
+## DATABASE TABLE RELATIONSHIPS
+
+### TABLE 1: Document
+    ```
+        {
+            name            --name of uploaded file
+            description     --description of uploaded file (if provided)
+        }
+    ```
+
+### TABLE 2: Blocks
+    ```
+        {
+            document_id    --Foreign key to Document Table
+            start_row      --Starting X-axis index of block
+            start_col      --Starting Y-axis index of block
+            end_row        --Ending X-axis index of block
+            end_col        --Ending Y-axis index of block
+        }
+    ```
+
+### TABLE 3: Delimiter
+    ```
+        {
+            value       --JSON encoded string representation of the delimiter
+            count       --Integer value of the minimum number of times the delimiter has to occur consequtively to be counted as delimiter.
+        }
+    ```
+## LIMITATIONS
+
+The algorithm for selecting delimiters from the text file has the following limitations.
+
+1. Assumes each line can only take one receipt block. 
+
+2. Assumes a delimiter only seperate lines and not words/phrases on a line.
+
+
+## IMPROVEMENTS
+
+The algorithm can be improved by using regex methods to effectively cater for the above limitations. The challenging part will be accomodating the new delimiters that can be added.
+With more time i'm certain I'll be able to crack this.
+
+
