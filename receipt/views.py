@@ -32,7 +32,7 @@ class ReceiptView (APIView):
               but the operation wont be scalable. More info here
               https://www.geeksforgeeks.org/prefetch_related-and-select_related-functions-in-django/
               """
-            return JsonResponse({
+            return Response({
                 "status":200,
                 "data": output,
                 "message": "success"
@@ -40,7 +40,7 @@ class ReceiptView (APIView):
 
         except Exception as e:
             print(e)
-            return JsonResponse(
+            return Response(
                 {
                     "status": 500,
                     'message': "Internal Server Error",
@@ -90,21 +90,21 @@ class ReceiptView (APIView):
                     
                     blocks = Block.objects.bulk_create(blocksArray)
                     serialized_blocks = BlockSerializer(blocks,many=True)
-                    return JsonResponse({
+                    return Response({
                         "status": 200,
                         "data": serialized_blocks.data,
                         "message": "success"
                     })
                 else:
                     print(data.errors)
-                    return JsonResponse({
+                    return Response({
                         "status": 400,
                         "message": "failure",
                         "error": data.errors
                     }, status=400)
         except Exception as e:
             print(e)
-            return JsonResponse(
+            return Response(
                 {
                     "status": 500,
                     'message': "Internal Server Error",
@@ -132,23 +132,21 @@ class ReceiptView (APIView):
                 break
         
         ## find index of last non-space character
-        for index in range(len(word)-1,-1,-1):
-            char = word[index]
-            if not char.isspace():
-                output["end"] = index
-                break
 
-        end_index=len(word)-2
+        # sliding window of length 1. since newline characters are multiple of 1
+        end_index=len(word)-1
         while True:
-            if word[end_index:].strip() not in self.POSSIBLE_RETURN_STRINGS:
-                break
+            # increase end_index if current word in window isnt a newline character
+            if word[end_index:] not in self.POSSIBLE_RETURN_STRINGS:
+                if not word[end_index].isspace():
+                    break
             end_index-=1
 
         output["end"] = end_index     
         return output
     
     ## Helper Method
-    def contains_delimeter(self, word: str, delimeters: list[dict[str,int]]) -> bool:
+    def contains_delimeter(self, word: str, delimeters: list[dict[str,int|str]]) -> bool:
         """
         Checks if a String contains any item from a list of characters
         
@@ -160,18 +158,16 @@ class ReceiptView (APIView):
         (bool) - Boolean value denoting the word contains a delimiter or not
         """
         for delimeter in delimeters:
-            ## Using this regex [value]{min,max}
 
             value = json.loads(delimeter["value"])
             count = delimeter["count"]
-            if count != 1 and value*count in word.strip():
-                return True
-            elif count == 1 and value == word.strip():
-                return True
-            elif word.strip() in self.POSSIBLE_RETURN_STRINGS:
+            if value*count in word.strip():
                 return True
 
-        return False
+        if word in self.POSSIBLE_RETURN_STRINGS:
+            return True
+        else:
+            return False
 
 class DelimeterView (APIView):
 
@@ -179,7 +175,7 @@ class DelimeterView (APIView):
         try:
             delimeter_object = Delimeter.objects.all()
             serialized_delimeter = DelimeterSerializer(delimeter_object, many=True)
-            return JsonResponse({
+            return Response({
                 "status":200,
                 "data": serialized_delimeter.data,
                 "message": "success"
@@ -187,7 +183,7 @@ class DelimeterView (APIView):
 
         except Exception as e:
             print(e)
-            return JsonResponse(
+            return Response(
                 {
                     "status": 500,
                     'message': "Internal Server Error",
@@ -204,7 +200,7 @@ class DelimeterView (APIView):
                 ## Check if Value already exists
                 delimeter_count = Delimeter.objects.filter(value=req_data.data["value"]).count()
                 if delimeter_count >= 1:
-                    return JsonResponse(
+                    return Response(
                         {
                             "status": 400,
                             'message': "Value already exist"
@@ -214,21 +210,21 @@ class DelimeterView (APIView):
                 delimeter = Delimeter.objects.create(**req_data.data)
                 serialized_delimeter = DelimeterSerializer(delimeter)            
             
-                return JsonResponse({
+                return Response({
                     "status":200,
                     "data": serialized_delimeter.data,
                     "message": "success"
                 })
             else:
                 print(req_data.errors)
-                return JsonResponse({
+                return Response({
                     "status": 400,
                     "message": "failure",
                     "error": req_data.errors
                 })
         except Exception as e:
             print(e)
-            return JsonResponse(
+            return Response(
                 {
                     "status": 500,
                     'message': "Internal Server Error",

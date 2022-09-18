@@ -11,11 +11,15 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import collections
 from dotenv import load_dotenv
 import os
 import dj_database_url
 
 load_dotenv()
+# collections.Callable has been moved to collections.abc.Callable 
+# and the package used for testing (nose) didn't update this
+collections.Callable = collections.abc.Callable
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -188,3 +192,7 @@ LOGGING = {
     },
 }
 
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--with-spec', '--spec-color',
+             '--with-coverage', '--cover-html',
+             '--cover-package=.', '--cover-html-dir=reports/cover']

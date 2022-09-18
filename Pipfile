@@ -12,6 +12,10 @@ python-dotenv = "*"
 dj-database-url = "*"
 
 [dev-packages]
+nose = "*"
+pinocchio = "*"
+django-nose = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.10"
