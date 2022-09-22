@@ -29,7 +29,7 @@ services:
       DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db/${DB_NAME:-ocr_engine}
       DEBUG: ${DEBUG:-False}
       SECRET_KEY: ${SECRET_KEY:-mysupersecretjwtkey}
-    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python manage.py migrate && python manage.py loaddata default_delimiters && python manage.py runserver 0.0.0.0:8000"
 
 networks:
   webnet:

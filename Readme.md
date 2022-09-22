@@ -17,7 +17,11 @@
 ```
 >> python manage.py migrate
 ```
-7. Start Application
+7. Seed Default Delimiters
+```
+>> python manage.py loaddata default_delimiters
+```
+8. Start Application
 ```
 >> python manage.py runserver
 ```
@@ -39,17 +43,6 @@
 ## POSTMAN DOCUMENTATION
 [Postman Doc](https://documenter.getpostman.com/view/11044390/2s7YYu4hju)
 
-
-## IMPLEMENTATION & DESIGN
-
-Initially I had 2 ways to implement this.
-
-1. Read the contents of .txt file into a variable, then use regex functions to find the positions of the words and the delimeters.
-
-2. Read the .txt file line-by-line using the readline() function in python. This sequence will produce the row index of the words in the file. Just need to find the column index. While traversing by rows, check that a row isn't a delimeter (i.e the entire row isn't a delimeter). If it is, dont process it to find the start and end column.
-
-
-I decided to go ahead with the second approach because it was easier to implement and the cost of using read() and readline() in python are basically the same thing
 
 ## DATABASE TABLE RELATIONSHIPS
 
@@ -79,18 +72,21 @@ I decided to go ahead with the second approach because it was easier to implemen
             count       --Integer value of the minimum number of times the delimiter has to occur consequtively to be counted as delimiter.
         }
     ```
-## LIMITATIONS
+## IMPLEMENTATION & DESIGN
 
-The algorithm for selecting delimiters from the text file has the following limitations.
+Initially I had 2 ways to implement this.
 
-1. Assumes each line can only take one receipt block. 
+1. Read the contents of .txt file into a variable, then use regex functions to find the positions of the words and the delimeters.
 
-2. Assumes a delimiter only seperate lines and not words/phrases on a line.
+2. Read the .txt file line-by-line using the readline() function in python. This sequence will produce the row index of the words in the file. Just need to find the column index. 
+
+While traversing by rows, 
+
+-  Find the start and end index of the delimiters. For example if delimiter value is `#` and count is `2`. Then Find the various indices of `##` in the word.
+-  Merge these indices into one to give you the start and end indices of the delimiter. This approach will help us find delimiters hiding between words.
+-  If the Word contains no delimiter, just traverse the word excluding the whitespaces and find the start and end index
+-  For words that contains delimiter, for each delimier, find the indices of the words it bound to left and right by slicing from the delimiter's start index to the left and its end index to the right.
 
 
-## IMPROVEMENTS
-
-The algorithm can be improved by using regex methods to effectively cater for the above limitations. The challenging part will be accomodating the new delimiters that can be added.
-With more time i'm certain I'll be able to crack this.
-
+I decided to go ahead with the second approach because I would be able to capture multiple delimiters in a single line, as well as delimiters that occupy single lines
 

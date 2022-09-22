@@ -1,0 +1,35 @@
+- model: receipt.Delimeter
+  pk: 1
+  fields:
+    value: '"\\n"'
+    count: 1
+    created_at: 2022-09-17 06:35:09.486933+00
+    updated_at: 2022-09-17 06:35:09.486933+00
+- model: receipt.Delimeter
+  pk: 2
+  fields:
+    value: '"\\r"'
+    count: 1
+    created_at: 2022-09-17 06:35:09.486933+00
+    updated_at: 2022-09-17 06:35:09.486933+00
+- model: receipt.Delimeter
+  pk: 3
+  fields:
+    value: '"\\r\\n"'
+    count: 1
+    created_at: 2022-09-17 06:35:09.486933+00
+    updated_at: 2022-09-17 06:35:09.486933+00
+- model: receipt.Delimeter
+  pk: 4
+  fields:
+    value: '"-"'
+    count: 2
+    created_at: 2022-09-17 06:35:09.486933+00
+    updated_at: 2022-09-17 06:35:09.486933+00
+- model: receipt.Delimeter
+  pk: 5
+  fields:
+    value: '"#"'
+    count: 2
+    created_at: 2022-09-17 06:35:09.486933+00
+    updated_at: 2022-09-17 06:35:09.486933+00

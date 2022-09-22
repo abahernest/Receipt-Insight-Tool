@@ -3,13 +3,14 @@ from rest_framework.response import Response
 from django.db import transaction
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
+from rest_framework.parsers import FormParser, MultiPartParser
 
 # serializers
 from .serializer import DelimeterSerializer, DocumentSerializer, BlockSerializer,NewDocumentSerializer
 # models
 from .models import Delimeter, Document, Block
-
+# Core
+from .core import GetSubstrings
 
 class ReceiptView (APIView):
     parser_classes = [FormParser, MultiPartParser]
@@ -57,6 +58,9 @@ class ReceiptView (APIView):
                 delimeterObjects = Delimeter.objects.all()
                 delimeters = DelimeterSerializer(delimeterObjects, many=True)
 
+                [delimeters, smallest_delimiter, longest_delimiter] = self.process_delimiters(
+                    delimeters.data)
+
                 if data.is_valid():
                     file_obj = self.request.data.get('file')
                     row = 0
@@ -70,21 +74,20 @@ class ReceiptView (APIView):
                             line = file.readline()
                             if not line:
                                 break
-            
-                            line=str(line).split("'")[1] ## line is initially returned as \b'word'
                             
-                            ## Line doesn't contain any delimeter
-                            if not self.contains_delimeter(line,delimeters.data):
-                                ## find indices of first and last non-space characters
-                                indexes = self.find_axes(line)
+                            line = self.process_word(line)
 
-                                blocksArray.append(Block(
-                                    begin_row= row,
-                                    begin_column= indexes["start"], 
-                                    end_row= row,
-                                    document = document,
-                                    end_column= indexes["end"]
-                                ))
+                            blocks = GetSubstrings(line, delimeters, smallest_delimiter, longest_delimiter)
+                            
+                            for col_indices in blocks:
+                                if col_indices[0] <= col_indices[1]:
+                                    blocksArray.append(Block(
+                                        begin_row=row,
+                                        begin_column=col_indices[0],
+                                        end_row=row,
+                                        document=document,
+                                        end_column=col_indices[1],
+                                    ))
 
                             row +=1
                     
@@ -117,11 +120,11 @@ class ReceiptView (APIView):
         """
         Find the Non-space Starting and Ending Indices a word or phrase in a string
         
-        Args:
-        word (str) - The string which contains spaces, newline and words
+        Params:
+        word (str): - The string which contains spaces, newline and words
 
         Returns:
-        (dict (str,int)) - Dictionary object with keys "start" and "end" which represents the starting and ending index
+        (dict[str,int]): - Dictionary object with keys "start" and "end" which represents the starting and ending index
         """
         output={"start":0,"end":0}
         
@@ -150,12 +153,12 @@ class ReceiptView (APIView):
         """
         Checks if a String contains any item from a list of characters
         
-        Args:
-        word (str) - The string which should be traversed
-        delimeters (list[dict[str, int|Non]]) - The array that contains a dictionary of characters and their count
+        Params:
+        word (str): - The string which should be traversed
+        delimeters (list[dict[str, int|Non]]): - The array that contains a dictionary of characters and their count
         
         Returns:
-        (bool) - Boolean value denoting the word contains a delimiter or not
+        (bool): - Boolean value denoting the word contains a delimiter or not
         """
         for delimeter in delimeters:
 
@@ -168,6 +171,39 @@ class ReceiptView (APIView):
             return True
         else:
             return False
+
+    def process_word(self, word: str) -> str:
+        """
+        Performs cleanup on word
+        
+        Params:
+        word (str) - The string which should be processed
+        
+        Returns:
+        (str) - Processed word
+        """
+
+        return str(word).split("'")[1] ## line is initially returned as \b'word'
+
+    def process_delimiters(self, delimiters :list[dict[str,int|str]]) -> list[set[str] | int]:
+        """"
+        Convert the delimiter object to a set of strings for faster lookup
+
+        Params:
+        delimiters (list[dict[str,int|str]]): An array of delimeter objects
+
+        Returns:
+        set[str]: A set of strings
+        int: Length of the shortest delimiter
+        int: length of the longest delimiter
+        """
+        delimiterSet= set()
+        for item in delimiters:
+            delimiterSet.add(json.loads(item["value"]) * item["count"])
+
+        shortest_delim = len(min(delimiterSet, key=len))
+        longest_delim = len(max(delimiterSet, key=len))
+        return [delimiterSet, shortest_delim, longest_delim]
 
 class DelimeterView (APIView):
 
